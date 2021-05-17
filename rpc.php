@@ -3,8 +3,10 @@
 # Obtain the JSON payload from an OwnTracks app POSTed via HTTP
 # and insert into database table.
 
+require_once('./config.inc.php');
+require_once('./auth.php');
+
 header("Content-type: application/javascript");
-require_once('config.inc.php');
 
 $response = array();
 
@@ -36,8 +38,8 @@ if (array_key_exists('action', $_REQUEST)) {
             $_GET['dateTo'] = date("Y-m-d");
         }
 
-        if (array_key_exists('accuracy', $_GET) && $_GET['accuracy'] > 0) {
-            $accuracy = intVal($_GET['accuracy']);
+        if (array_key_exists('accuracy', $_GET) && intval($_GET['accuracy']) > 0) {
+            $accuracy = intval($_GET['accuracy']);
         } else {
             $accuracy = $_config['default_accuracy'];
         }

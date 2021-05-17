@@ -1,9 +1,9 @@
 <?php
 
-header("Content-type: application/json");
-
-$_config = [];
 require_once('./config.inc.php');
+require_once('./auth.php');
+
+header("Content-type: application/json");
 
 $fp = NULL; //fopen('./log/record_log.txt', 'a+'); do not open file if not needed
 function _log($msg){
