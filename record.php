@@ -1,7 +1,7 @@
 <?php
 
 require_once('./config.inc.php');
-require_once('./auth.php');
+require_once('./auth.inc.php');
 
 header("Content-type: application/json");
 

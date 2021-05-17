@@ -1,7 +1,7 @@
 <?php
 
 require_once('./config.inc.php');
-require_once('./auth.php');
+require_once('./auth.inc.php');
 
 $dateFrom = isset($_GET['dateFrom']) ? $_GET['dateFrom'] : null;
 $dateTo = isset($_GET['dateTo']) ? $_GET['dateTo'] : null;
@@ -25,7 +25,9 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 ?>
 <html>
 	<head>
+		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Your Own Tracks</title>
 		<link rel="icon" href="./img/favicon.ico" />
 
 		<!-- JQUERY !-->
@@ -55,6 +57,13 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
 
+		<!-- cleanup final DOM to remove any top-level elements injected by a free webhost !-->
+		<script>
+			jQuery(document).ready(function($){
+				$('body > *:not(div.container)').remove();
+			})
+		</script>
+
 		<!-- BOOTSTRAP !-->
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="//getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" />
@@ -80,7 +89,6 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				opacity: 0.5;
 			}
 		</style>
-		<title>Your Own Tracks</title>
 	</head>
 	<body>
 		<div class="container">
@@ -890,7 +898,6 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 			</script>
 		</div>
 		<div class="container">
-
 			<div id="mapid"></div>
 			<div id="velocityChart"></div>
 			<div id="altitudeChart"></div>

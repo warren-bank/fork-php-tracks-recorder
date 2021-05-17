@@ -1,10 +1,11 @@
 <?php
+
+require_once('./config.inc.php');
+require_once('./auth.inc.php');
+
 //http://owntracks.org/booklet/tech/http/
 # Obtain the JSON payload from an OwnTracks app POSTed via HTTP
 # and insert into database table.
-
-require_once('./config.inc.php');
-require_once('./auth.php');
 
 header("Content-type: application/javascript");
 
