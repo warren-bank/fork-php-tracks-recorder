@@ -274,8 +274,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				var polylines = [];
 				var default_zoom;
 				var default_center;
-				var live_view = false;
-				var live_view_timer;
+				var live_view_timer = 0;
 
 				var marker_start_icons = [];
 				var marker_finish_icons = [];
@@ -491,14 +490,14 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				*/
 				function setLiveMap(){
 					console.log("setLiveMap : INIT");
-					live_view = !live_view;
 
-					if(live_view){
+					if(live_view_timer){
+						clearInterval(live_view_timer);
+						live_view_timer = 0;
+						$('#livemap_on').addClass( "btn-default" ).removeClass( "btn-primary" ).removeClass( "active" );
+					}else{
 						live_view_timer = setInterval(handleLiveMap, <?php echo $_config['live_map_interval']; ?>);
 						$('#livemap_on').removeClass( "btn-default" ).addClass( "btn-primary" ).addClass( "active" );
-					}else{
-						clearInterval(live_view_timer);
-						$('#livemap_on').addClass( "btn-default" ).removeClass( "btn-primary" ).removeClass( "active" );
 					}
 				}
 
@@ -537,6 +536,8 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 						$('#todayButton').addClass('disabled');
 						$('#livemap_on').removeClass('disabled');
 					}else{
+						if (live_view_timer) setLiveMap();
+
 						$('#todayButton').removeClass('disabled');
 						$('#livemap_on').addClass('disabled');
 					}
@@ -889,6 +890,9 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 						success: function(data, status){
 							if(data.status){
 								jsonMarkers = JSON.parse(data.markers);
+
+								// don't process callback if timer has been cancelled
+								if (is_live_map_update && !live_view_timer) return;
 
 								if(handleMarkersData(jsonMarkers, is_live_map_update)){ $('#mapid').css('filter','blur(0px)'); }
 							}else{
