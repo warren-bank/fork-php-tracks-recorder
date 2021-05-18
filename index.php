@@ -283,11 +283,14 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				function initUI(){
 					console.log("initUI : INIT");
 
-					dateTo   = <?php echo empty($dateTo)   ? 'null' : 'moment("' . $dateTo   . '")' ?> || dateTodayNoon;
-					dateFrom = <?php echo empty($dateFrom) ? 'null' : 'moment("' . $dateFrom . '")' ?> || dateTodayNoon;
+					dateFrom = <?php echo empty($dateFrom) ? 'null' : 'moment("' . $dateFrom . '")' ?>;
+					dateTo   = <?php echo empty($dateTo)   ? 'null' : 'moment("' . $dateTo   . '")' ?>;
 
-					$('#dateTo').val(dateTo.format('YYYY-MM-DD'));
+					if (!dateFrom || !dateFrom.isValid()) dateFrom = dateTodayNoon;
+					if (!dateTo   || !dateTo.isValid())   dateTo   = dateTodayNoon;
+
 					$('#dateFrom').val(dateFrom.format('YYYY-MM-DD'));
+					$('#dateTo').val(dateTo.format('YYYY-MM-DD'));
 
 					$('.input-daterange').datepicker({
 						format: 'yyyy-mm-dd',
@@ -397,9 +400,12 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				function gotoDate(_dateFrom, _dateTo, pushState){
 					console.log("gotoDate : INIT");
 
-					var _dateFrom = (typeof _dateFrom !== 'undefined') ? moment(_dateFrom) : dateTodayNoon;
-					var _dateTo   = (typeof _dateTo   !== 'undefined') ? moment(_dateTo)   : dateTodayNoon;
+					var _dateFrom = (typeof _dateFrom !== 'undefined') ? moment(_dateFrom) : null;
+					var _dateTo   = (typeof _dateTo   !== 'undefined') ? moment(_dateTo)   : null;
 					var pushState = (typeof pushState !== 'undefined') ? pushState : true;
+
+					if (!_dateFrom || !_dateFrom.isValid()) _dateFrom = dateTodayNoon;
+					if (!_dateTo   || !_dateTo.isValid())   _dateTo   = dateTodayNoon;
 
 					dateFrom = _dateFrom;
 					dateTo = _dateTo;
