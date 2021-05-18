@@ -89,16 +89,17 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				opacity: 0.5;
 			}
 
-			form { margin-bottom: 0; }
-			.datepicker.dropdown-menu { z-index: 999 !important; }
-
 			/*
 			 * tested in:
-			 *   - Chrome 90 desktop   (by manually resizing window)
-			 *   - Android 4.4 WebView (small screen device without support for CSS3, HTML5, or ES6)
+			 *   - Chrome 90 desktop   (with    support for CSS3, HTML5, ES6; by manually resizing window)
+			 *   - Chrome 30 desktop   (without support for CSS3, HTML5, ES6; by manually resizing window)
+			 *   - Android 4.4 WebView (without support for CSS3, HTML5, ES6; small screen device)
 			 */
-			@media (max-width: 767px) {
+			@media screen {
 				.container, .row, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 { margin: 0px !important; padding: 0px !important; }
+				.datepicker.dropdown-menu { z-index: 999 !important; }
+
+				form { margin-bottom: 0; }
 
 				.btn,
 				.page-header.row input[type="text"],
@@ -108,24 +109,34 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				.input-group-addon { line-height: 20px; }
 
 				.page-header.row { padding: 15px 5px !important; margin-bottom: 15px !important; }
-				.page-header.row *:not(.hidden-xs) { display: inline-block !important; width: auto !important; float: none !important; }
+				.page-header.row * { display: inline-block !important; width: auto !important; float: none !important; }
+				.page-header.row > div.text-right { margin-left: auto !important; }
 				.page-header.row > div > * { width: 100%; }
 				.page-header.row .glyphicon { min-width: 15px; }
-				.page-header.row input[type="text"] { font-size: 0.75em; max-width: 8em; text-overflow: clip; direction: rtl; }
+				.page-header.row input[type="text"] { font-size: 0.75em; max-width: 8em; text-overflow: clip; }
 
 				#configCollapse > div.well { padding: 15px 5px; }
-				#configCollapse > div.well *:not(.hidden-xs) { display: inline-block !important; width: auto !important; float: none !important; }
+				#configCollapse > div.well * { display: inline-block !important; width: auto !important; float: none !important; }
+				#configCollapse > div.well > div:last-child { float: right !important; }
 				#configCollapse > div.well input[type="number"],
-				#configCollapse > div.well select { font-size: 1em; max-width: 7em; text-overflow: clip; direction: rtl; }
+				#configCollapse > div.well select { font-size: 1em; max-width: 7em; }
 			}
-			@media (max-width: 460px) {
+			@media screen and (min-width: 767px) {
+				.page-header.row .visible-xs,
+				#configCollapse > div.well .visible-xs { display: none !important; }
+			}
+			@media screen and (max-width: 767px) {
+				.page-header.row .hidden-xs,
+				#configCollapse > div.well .hidden-xs { display: none !important; }
+			}
+			@media screen and (max-width: 460px) {
 				.btn,
 				.page-header.row input[type="text"],
 				#configCollapse > div.well input[type="number"],
 				#configCollapse > div.well select,
 				.input-group-addon { padding: 6px; }
 			}
-			@media (max-width: 400px) {
+			@media screen and (max-width: 400px) {
 				.btn,
 				.page-header.row input[type="text"],
 				#configCollapse > div.well input[type="number"],
@@ -137,23 +148,24 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				#configCollapse > div.well input[type="number"],
 				#configCollapse > div.well select { font-size: 0.75em; }
 			}
-			@media (max-width: 310px) {
-				.page-header.row input[type="text"] { font-size: 0.6em; max-width: 5em; }
+			@media screen and (max-width: 310px) {
+				/* When screen is less than 310px, date input fields will truncate. By changing direction from right-to-left, truncation will occur on the left side.. which is preferable since the year is mostly static. However, this setting makes manual input much less intuitive.. which is why this setting isn't applied for all screen sizes. */
+				.page-header.row input[type="text"] { font-size: 0.6em; max-width: 5em; direction: rtl; }
 			}
-			@media (max-width: 285px) {
+			@media screen and (max-width: 285px) {
 				#configCollapse > div.well input[type="number"],
 				#configCollapse > div.well select { font-size: 0.65em; max-width: 5em; }
 			}
-			@media (max-width: 265px) {
+			@media screen and (max-width: 265px) {
 				.page-header.row input[type="text"] { font-size: 0.5em; }
 			}
-			@media (max-width: 255px) {
+			@media screen and (max-width: 255px) {
 				#configCollapse > div.well > div:last-child .input-group-addon { display: none !important; }
 			}
-			@media (max-width: 250px) {
+			@media screen and (max-width: 250px) {
 				.page-header.row input[type="text"] { max-width: 4em; }
 			}
-			@media (max-width: 235px) {
+			@media screen and (max-width: 235px) {
 			}
 		</style>
 	</head>
