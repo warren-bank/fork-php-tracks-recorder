@@ -236,6 +236,9 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				</div>
 			</div>
 			<script>
+				// compensate for up to a 12 hour timezone difference between (location of) client and (configuration of) server
+				var dateTodayNoon = moment().startOf('day').add(12, 'hours');
+
 				//app parameters vars
 				var dateFrom;
 				var dateTo;
@@ -280,8 +283,8 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				function initUI(){
 					console.log("initUI : INIT");
 
-					dateTo   = moment(<?php if (!empty($dateTo))   {echo '"' . $dateTo . '"';} ?>);
-					dateFrom = moment(<?php if (!empty($dateFrom)) {echo '"' . $dateFrom . '"';} ?>);
+					dateTo   = <?php echo empty($dateTo)   ? 'null' : 'moment("' . $dateTo   . '")' ?> || dateTodayNoon;
+					dateFrom = <?php echo empty($dateFrom) ? 'null' : 'moment("' . $dateFrom . '")' ?> || dateTodayNoon;
 
 					$('#dateTo').val(dateTo.format('YYYY-MM-DD'));
 					$('#dateFrom').val(dateFrom.format('YYYY-MM-DD'));
@@ -394,8 +397,8 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				function gotoDate(_dateFrom, _dateTo, pushState){
 					console.log("gotoDate : INIT");
 
-					var _dateFrom = (typeof _dateFrom !== 'undefined') ? moment(_dateFrom) : moment();
-					var _dateTo = (typeof _dateTo !== 'undefined') ? moment(_dateTo) : moment();
+					var _dateFrom = (typeof _dateFrom !== 'undefined') ? moment(_dateFrom) : dateTodayNoon;
+					var _dateTo   = (typeof _dateTo   !== 'undefined') ? moment(_dateTo)   : dateTodayNoon;
 					var pushState = (typeof pushState !== 'undefined') ? pushState : true;
 
 					dateFrom = _dateFrom;
