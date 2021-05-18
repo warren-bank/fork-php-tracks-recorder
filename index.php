@@ -88,13 +88,80 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				cursor: default;
 				opacity: 0.5;
 			}
+
+			form { margin-bottom: 0; }
+			.datepicker.dropdown-menu { z-index: 999 !important; }
+
+			/*
+			 * tested in:
+			 *   - Chrome 90 desktop   (by manually resizing window)
+			 *   - Android 4.4 WebView (small screen device without support for CSS3, HTML5, or ES6)
+			 */
+			@media (max-width: 767px) {
+				.container, .row, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 { margin: 0px !important; padding: 0px !important; }
+
+				.btn,
+				.page-header.row input[type="text"],
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select,
+				.input-group-addon { height: 34px; padding: 6px 12px; }
+				.input-group-addon { line-height: 20px; }
+
+				.page-header.row { padding: 15px 5px !important; margin-bottom: 15px !important; }
+				.page-header.row *:not(.hidden-xs) { display: inline-block !important; width: auto !important; float: none !important; }
+				.page-header.row > div > * { width: 100%; }
+				.page-header.row .glyphicon { min-width: 15px; }
+				.page-header.row input[type="text"] { font-size: 0.75em; max-width: 8em; text-overflow: clip; direction: rtl; }
+
+				#configCollapse > div.well { padding: 15px 5px; }
+				#configCollapse > div.well *:not(.hidden-xs) { display: inline-block !important; width: auto !important; float: none !important; }
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select { font-size: 1em; max-width: 7em; text-overflow: clip; direction: rtl; }
+			}
+			@media (max-width: 460px) {
+				.btn,
+				.page-header.row input[type="text"],
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select,
+				.input-group-addon { padding: 6px; }
+			}
+			@media (max-width: 400px) {
+				.btn,
+				.page-header.row input[type="text"],
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select,
+				.input-group-addon { padding: 6px 3px; }
+
+				.page-header.row input[type="text"] { max-width: 6em; }
+
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select { font-size: 0.75em; }
+			}
+			@media (max-width: 310px) {
+				.page-header.row input[type="text"] { font-size: 0.6em; max-width: 5em; }
+			}
+			@media (max-width: 285px) {
+				#configCollapse > div.well input[type="number"],
+				#configCollapse > div.well select { font-size: 0.65em; max-width: 5em; }
+			}
+			@media (max-width: 265px) {
+				.page-header.row input[type="text"] { font-size: 0.5em; }
+			}
+			@media (max-width: 255px) {
+				#configCollapse > div.well > div:last-child .input-group-addon { display: none !important; }
+			}
+			@media (max-width: 250px) {
+				.page-header.row input[type="text"] { max-width: 4em; }
+			}
+			@media (max-width: 235px) {
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
 			<div class="row page-header">
 				<div class="col-xs-1 text-left">
-					<a onclick="gotoDate(datePrevFrom, datePrevTo);" class="btn btn-primary" role="button">
+					<a onclick="gotoDate(datePrevFrom, datePrevTo);" class="btn btn-primary" role="button" title="Previous">
 						<span class="hidden-xs">Previous</span>
 						<span class="visible-xs"><span class="glyphicon glyphicon-arrow-left"></span></span>
 					</a>
@@ -108,37 +175,37 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				</div>
 				<div class="col-xs-6 text-right">
 					<div class="btn-group" role="group">
-						<a role="button" data-toggle="collapse" href="#configCollapse" class="btn btn-default"  id="configButton">
+						<a role="button" data-toggle="collapse" href="#configCollapse" class="btn btn-default" id="configButton" title="Config">
 							<span class="hidden-xs">Config</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-cog"></span></span>
 						</a>
 
-						<a role="button" onclick="resetZoom();" class="btn btn-default">
+						<a role="button" onclick="resetZoom();" class="btn btn-default" title="Reset view">
 							<span class="hidden-xs">Reset view</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-screenshot"></span></span>
 						</a>
-						<a role="button" onclick="gotoDate();" class="btn btn-default" style="display: inline-block;" id="todayButton">
+						<a role="button" onclick="gotoDate();" class="btn btn-default" style="display: inline-block;" id="todayButton" title="Today">
 							<span class="hidden-xs">Today</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-arrow-up"></span></span>
 						</a>
-						<a role="button" onclick="gotoDate(dateNextFrom, dateNextTo);" class="btn btn-primary" style="display: inline-block;" id="nextButton">
+						<a role="button" onclick="gotoDate(dateNextFrom, dateNextTo);" class="btn btn-primary" style="display: inline-block;" id="nextButton" title="Next">
 							<span class="hidden-xs">Next</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-arrow-right"></span></span>
 						</a>
 					</div>
 				</div>
 			</div>
-			<div class="collapse" id="configCollapse"><br/>
+			<div class="collapse" id="configCollapse">
 				<div class="well">
 					<div class="row">
 						<div class="col-xs-2 text-left">
-							<a role="button" onclick="showHideMarkers();" class="btn btn-default" id="show_markers">
+							<a role="button" onclick="showHideMarkers();" class="btn btn-default" id="show_markers" title="Show markers">
 							<span class="hidden-xs">Show markers</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-map-marker"></span></span>
 						</a>
 					</div>
 					<div class="col-xs-2 text-left">
-							<a role="button" onclick="setLiveMap();" class="btn btn-default" id="livemap_on">
+						<a role="button" onclick="setLiveMap();" class="btn btn-default" id="livemap_on" title="Live map">
 							<span class="hidden-xs">Live map</span>
 							<span class="visible-xs"><span class="glyphicon glyphicon-play-circle"></span></span>
 						</a>
@@ -563,10 +630,10 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 											}
 											popupString.push(['Location', (markers[i].display_name)
 												? markers[i].display_name
-												: "<span id='loc_"+ i +"'><a role='button' onclick='geodecodeMarker("+ '"' + tid + '"' +", "+ i +");' title='Get location (geodecode)'>Get location</a></span>"
+												: "<span id='loc_"+ i +"'><a role='button' onclick='geodecodeMarker("+ '"' + tid + '"' +", "+ i +");' title='Get location'>Get location</a></span>"
 											])
 
-											removeString = "<br/><br/><a role='button' onclick='deleteMarker("+ '"' + tid + '"' +", "+ i +");'>Delete marker</a>";
+											removeString = "<br/><br/><a role='button' onclick='deleteMarker("+ '"' + tid + '"' +", "+ i +");' title='Delete marker'>Delete marker</a>";
 
 											//prepare popup HTML code for marker
 											popupString = '<table width="300px">' + popupString.map(function(row){return '<tr valign="top"><td>' + row.join('</td><td>') + '</td></tr>';}).join("\n") + '</table>' + removeString;
