@@ -494,12 +494,16 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 					live_view = !live_view;
 
 					if(live_view){
-						live_view_timer = setInterval(getMarkers, <?php echo $_config['live_map_interval']; ?>);
+						live_view_timer = setInterval(handleLiveMap, <?php echo $_config['live_map_interval']; ?>);
 						$('#livemap_on').removeClass( "btn-default" ).addClass( "btn-primary" ).addClass( "active" );
 					}else{
 						clearInterval(live_view_timer);
 						$('#livemap_on').addClass( "btn-default" ).removeClass( "btn-primary" ).removeClass( "active" );
 					}
+				}
+
+				function handleLiveMap(){
+					getMarkers(/* is_live_map_update= */ true);
 				}
 
 ///// UI HANDLERS
@@ -565,7 +569,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 							$("#trackerID_selector").val(trackerID);
 						}else{
 							console.log("updateTrackerIDs : INFO no trackerID found in markers json");
-							return ;
+							return;
 						}
 
 					}catch(err) {
@@ -578,7 +582,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				* Draws a set of location tracks per tid in _tid_markers array
 				* @param {Array} _tid_markers
 				*/
-				function drawMap(_tid_markers){
+				function drawMap(_tid_markers, is_live_map_update){
 					console.log("drawMap : INIT");
 
 					try{
@@ -589,9 +593,11 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 							tid_markers = _tid_markers;
 							console.log("drawMap : INFO non null param given !");
 						}else{
-							console.log("drawMap : ERROR null param given and global markers not available !");
-							alert('No location markers collected for selected dates and accuracy !');
-							return;
+							if (!is_live_map_update){
+								console.log("drawMap : ERROR null param given and global markers not available !");
+								alert('No location markers collected for selected dates and accuracy !');
+							}
+							return false;
 						}
 
 						console.log("drawMap : INFO tid_markers = ");
@@ -603,7 +609,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 						var max_lon = -1000;
 						var min_lon = 1000;
 
-						if(map_drawn){ eraseMap(); }
+						eraseMap();
 
 						nb_markers=0; // global markers counter
 						trackerIDs = Object.keys(_tid_markers);
@@ -621,7 +627,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 								my_latlngs[tid] = [];
 								my_markers[tid] = [];
 
-								if(trackerID == "<?php echo $_config['default_trackerID']; ?>" || trackerID == tid){
+								if(trackerID == tid || trackerID == "<?php echo $_config['default_trackerID']; ?>"){
 									trackerIDString = ['Tracker ID', tid]
 
 									if(markers.length > 0){
@@ -717,13 +723,15 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 											outlineColor: '#000000',
 											outlineWidth: 0.5
 										}).addTo(mymap);
-									}else{
+									}
+									else if (!nb_markers && !is_live_map_update){
 										console.log("drawMap : ERROR No location data for trackerID '" + trackerID + "' found !");
 										alert('No location data for trackerID \'' + trackerID + '\' found !');
 									}
 								}
 							}
-						}else{
+						}
+						else if (!nb_markers && !is_live_map_update){
 							console.log("drawMap : ERROR No location data found for any trackerID !");
 							alert('No location data found for any trackerID !');
 						}
@@ -737,16 +745,15 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 							[max_lat, max_lon]
 						]);
 
-						//set map drawn flag
-						map_drawn = true;
-
-						return true;
 					}catch(err) {
-						console.log("drawMap : ERROR " + err.message);
-						alert( err.message );
-						map_drawn = false;
-						return false;
+						if (!is_live_map_update){
+							console.log("drawMap : ERROR " + err.message);
+							alert( err.message );
+						}
 					}
+
+					map_drawn = (nb_markers > 0);
+					return map_drawn;
 				}
 
 				function setDefaultZoom(){
@@ -762,6 +769,8 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				* Clears all markers on current map
 				*/
 				function eraseMap(){
+					if (!map_drawn) return;
+
 					console.log("eraseMap : INIT");
 
 					$.each(trackerIDs, function(_index, _tid){
@@ -776,7 +785,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 						//}
 					});
 
-					return true;
+					map_drawn = false;
 				}
 
 				/**
@@ -857,7 +866,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 				/**
 				* get the markers data from RPC and fires drawMap function if success
 				*/
-				function getMarkers(){
+				function getMarkers(is_live_map_update){
 					console.log("getMarkers : INIT");
 
 					//ajax call to get list of markers
@@ -881,7 +890,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 							if(data.status){
 								jsonMarkers = JSON.parse(data.markers);
 
-								if(handleMarkersData(jsonMarkers)){ $('#mapid').css('filter','blur(0px)'); }
+								if(handleMarkersData(jsonMarkers, is_live_map_update)){ $('#mapid').css('filter','blur(0px)'); }
 							}else{
 								console.log("getMarkers : ERROR Status : " + status);
 								console.log("getMarkers : ERROR Data : ");
@@ -897,8 +906,8 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 
 				/* Call-back function following ajax call to get markers (json decoded)
 				*/
-				function handleMarkersData(_tid_markers){
-					drawMap(_tid_markers);
+				function handleMarkersData(_tid_markers, is_live_map_update){
+					drawMap(_tid_markers, is_live_map_update);
 					drawVelocityChart(_tid_markers);
 					drawAltitudeChart(_tid_markers);
 					updateTrackerIDs(_tid_markers);
