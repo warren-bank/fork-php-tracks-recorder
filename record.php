@@ -21,12 +21,15 @@ function _log($msg){
 
 if ($_config['sql_type'] == 'mysql') {
     require_once('lib/db/MySql.php');
+    /** @var MySql $sql */
     $sql = new MySql($_config['sql_db'], $_config['sql_host'], $_config['sql_user'], $_config['sql_pass'], $_config['sql_prefix']);
 } elseif ($_config['sql_type'] == 'mysqlpdo') {
-    require_once('lib/db/MySqlPdo.php.php');
-    $sql = new MySqlPdo($_config['sql_db']);
+    require_once('lib/db/MySqlPdo.php');
+    /** @var MySqlPdo $sql */
+    $sql = new MySqlPdo($_config['sql_db'], $_config['sql_host'], $_config['sql_user'], $_config['sql_pass'], $_config['sql_prefix']);
 } elseif ($_config['sql_type'] == 'sqlite') {
     require_once('lib/db/SQLite.php');
+    /** @var SQLite $sql */
     $sql = new SQLite($_config['sql_db']);
 } else {
     die('Invalid database type: ' . $_config['sql_type']);
