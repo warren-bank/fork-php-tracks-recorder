@@ -11,8 +11,6 @@ class MySqlPdo extends AbstractDb
         string $password = null,
         string $prefix = ''
     ) {
-        $this->prefix = $prefix;
-
         $dsn = "mysql:host={$hostName};dbname={$db};port=3306";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -20,9 +18,12 @@ class MySqlPdo extends AbstractDb
             // note that not all drivers support this; remove if in error
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
+
         try {
             $this->db = new PDO($dsn, $userName, $password, $options);
+            $this->prefix = $prefix;
         } catch (\PDOException $e) {
+            _log("MySqlPdo error: " . $e->getMessage());
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }

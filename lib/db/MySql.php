@@ -6,8 +6,13 @@ class MySql extends AbstractDb
 {
     public function __construct(string $db, string $hostname = null, string $username = null, string $password = null, string $prefix = '')
     {
-        $this->db = new \mysqli($hostname, $username, $password, $db);
-        $this->prefix = $prefix;
+        try {
+            $this->db = new \mysqli($hostname, $username, $password, $db);
+            $this->prefix = $prefix;
+        } catch (\Exception $e) {
+            _log("MySql error: " . $e->getMessage() . " | " . $mysqli->error);
+            throw $e;
+        }
     }
 
     private function prepareStmt(string $sql, array $params)
