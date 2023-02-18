@@ -28,7 +28,7 @@ if(isset($_GET['trackerID']) && $_GET['trackerID'] != '' && strlen($_GET['tracke
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title>Your Own Tracks</title>
-		<link rel="icon" href="./img/favicon.ico" />
+		<link rel="icon" href="./static/img/favicon.ico" />
 
 		<!-- JQUERY !-->
 		<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>

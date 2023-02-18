@@ -1,10 +1,12 @@
 batch_load.php
-config.inc.php
 owntracks.db3
-log/*
+
+www_root/config.inc.php
+www_root/log/record_log.txt
 
 # PHPStorm folder
 .idea/
+**/.idea/
 
 # Windows image file caches
 Thumbs.db
